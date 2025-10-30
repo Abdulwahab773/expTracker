@@ -6,12 +6,16 @@ import authMiddleware from "./middleware/auth.js"
 import Usermodel from "./models/Usermodel.js";
 import bcrypt from "bcryptjs"
 import Expmodel from "./models/Expensemodel.js"
+import incomeModel from "./models/Incomemodel.js"
 
 
 let app = express()
 let PORT = 5000 || process.env.PORT
 let URI = "mongodb+srv://wahab:admin@cluster0.459mmbw.mongodb.net/?appName=Cluster0";
 
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cors());
 
 mongoose
     .connect(URI)
@@ -19,9 +23,6 @@ mongoose
     .catch((err) => console.log("MongoDb Error:", err.message));
 
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors());
 
 
 
@@ -134,6 +135,7 @@ app.post("/login", async (request, response) => {
             message: "user successfully login",
             status: true,
             token,
+            userId: user._id
         })
 
     } catch (error) {
@@ -149,26 +151,62 @@ app.post("/login", async (request, response) => {
 
 
 
-app.post("/createExp", authMiddleware, (request, response) => {
+app.post("/createIncome", authMiddleware, async (request, response) => {
+
+    await incomeModel.create(request.body);
 
     response.json({
-        meaasge: " Create Post Done"
+        meaasge: "Income Created Successfully"
     })
 
 })
 
 
-app.get("/getExp", authMiddleware, async (request, response) => {
-    const { id } = request.body.id;
-    Expmodel.find({ userId });
+app.get("/getIncome", authMiddleware, async (request, response) => {
+
+    const userId = request.query.userId;
+
+    
+    let allIncomes = await incomeModel.find({ userId })
+
+    console.log(allIncomes);
+    
+
     response.json({
-        meaasge: "Expense Done"
+        status: true,
+        message: "All Incomes Fetched!",
+        data: allIncomes 
     })
 
 })
 
-// get current user expenses
-app.get("/");
+
+app.post("/createExpense", authMiddleware, async (request, response) => {
+     await Expmodel.create(request.body);
+
+    response.json({
+        meaasge: "Expense Created Successfully",
+        status: true
+    })
+});
+
+
+
+app.get("/getExpense", authMiddleware, async (request, response) => {
+       
+    const userId = request.query.userId;
+
+    let allExpense = await Expmodel.find({ userId })
+
+    console.log(allExpense);    
+    
+    response.json({
+        status: true,
+        message: "All Expenses Fetched!",
+        data: allExpense 
+    })  
+});
+
 
 app.listen(PORT, () => {
     console.log(`server running on ${PORT}`)

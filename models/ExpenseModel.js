@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
-import UserModel from "./Usermodel";
 
 const expSchema = new mongoose.Schema({
-    expTitle: {
+    expenseTitle: {
         type: String,
     },
-    amount: {
+    expenseAmount: {
         type: Number,
     },
     date: {
@@ -13,8 +12,7 @@ const expSchema = new mongoose.Schema({
         default: Date.now
     },
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        type: String
     }
 });
 

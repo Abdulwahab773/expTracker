@@ -1,19 +1,20 @@
 import mongoose from "mongoose";
 
 const incSchema = new mongoose.Schema({
-  category: {
+
+  incomeTitle: {
     type: String,
   },
-  incTitle: {
-    type: String,
-  },
-  amount: {
+  incomeAmount: {
     type: Number,
   },
   date: {
     type: Date,
     default: Date.now
-  }
+  },
+  userId: {
+    type: String 
+  },
 });
 
 
